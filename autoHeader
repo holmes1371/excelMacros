@@ -1,7 +1,11 @@
+Option Compare Text
+
 Sub autoHeader()
 
 ' Developed in America by Tom Holmes tholmes@dtcc.com
+' Tested by Bruce
 
+    
     Dim endColumn
     Dim counter
     Dim test
@@ -9,6 +13,11 @@ Sub autoHeader()
     
     test = True
     firstSheet = ActiveSheet.Name
+    
+    If (Range("A1") = "*1") And (Range("A2") = "*Comment") Then
+        MsgBox "Sheet is already formatted.", vbInformation, "Hmmm.."
+        Exit Sub
+    End If
     
     
     Application.DisplayAlerts = False 'turns off dialog prompts
@@ -40,7 +49,7 @@ Sub autoHeader()
             Range("A1").Select
             Worksheets(1).Delete
             Application.DisplayAlerts = True 'turns back on dialog prompts for normal usage
-            MsgBox "Could not find the '*comment' box in column 1. Please verify this is the sheet where you want to insert a header.", vbInformation, "Warning!"
+            MsgBox "Could not find the '*Comment' box in column 1. Please verify this is the sheet where you want to insert a header.", vbInformation, "Warning!"
         Exit Sub
         End If
          
@@ -50,6 +59,7 @@ Sub autoHeader()
          Range("A1").Select
          
          If ActiveCell.Value = "*Comment" Then
+         ActiveCell.Value = "*Comment" 'ensures comment is capitalized
          Selection.End(xlToRight).Select
          endColumn = ActiveCell.Column
          Rows("1:1").Select
