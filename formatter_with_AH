@@ -6,12 +6,13 @@ Sub autoHeaderFormatter()
 ' Nicholas Lopez nlopez@DTCC.com
 ' autoHeader by Tom Holmes tholmes@dtcc.com
 ' Googled meaning of ";@" by Frank Castillo fcastilloandino@dtcc.com
-
+    
+    startCell = ActiveCell.Address
     endIt = False
     Application.ScreenUpdating = False
     Call autoHeaderF
     
-    startCell = ActiveCell.Address
+    
         
     If endIt = True Then
         Exit Sub
