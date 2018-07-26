@@ -3,7 +3,9 @@ Sub SheetFix()
 ' Nicholas Lopez nlopez@DTCC.com
 ' edited by Tom Holmes tholmes@dtcc.com
 ' Googled meaning of ";@" by Frank Castillo fcastilloandino@dtcc.com
- 
+    
+    startCell = ActiveCell.Address
+    
     'Selects the cell on the first row and first column
     Range("A1").Select
     Selection.NumberFormat = "yyyy-mm-dd;@"
@@ -45,7 +47,9 @@ Sub SheetFix()
     
 
     'Selects the cell on the first row and second column
-    Range("B1").Select
+    
+    Columns.AutoFit
+    Range(startCell).Select
 
 
 
