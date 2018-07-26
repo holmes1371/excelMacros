@@ -414,7 +414,6 @@ Function numOfTrades() As Integer
 End Function
 
 Function autoHeader2()
-'
 
 ' Developed by Tom Holmes tholmes@dtcc.com
 ' Emotional counselor: Frank
@@ -488,9 +487,7 @@ Function autoHeader2()
         Next i
         
         Range("A1").Select
-    End If
-    
-    If foundIt = False Then
+    Else
         Range("A1").Select
         MsgBox "No '*Comment' box found in Row 1. Please verify this is the correct form you want to format", vbInformation, "WARNING!"
         Application.ScreenUpdating = True
