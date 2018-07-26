@@ -1,0 +1,171 @@
+Option Compare Text
+Public endIt
+
+Sub autoHeaderFormatter()
+' Developed DTCC 3APR2017
+' Nicholas Lopez nlopez@DTCC.com
+' autoHeader by Tom Holmes tholmes@dtcc.com
+' Googled meaning of ";@" by Frank Castillo fcastilloandino@dtcc.com
+
+    endIt = False
+    Application.ScreenUpdating = False
+    Call autoHeaderF
+    
+    startCell = ActiveCell.Address
+        
+    If endIt = True Then
+        Exit Sub
+    End If
+    
+    'Selects the cell on the first row and first column
+    Range("A1").Select
+    Selection.NumberFormat = "yyyy-mm-dd;@"
+    
+    'Clear formatting
+    'Application.FindFormat.Clear
+    'Application.ReplaceFormat.Clear
+    
+    'Set formatting
+     Application.FindFormat.NumberFormat = "m/d/yyyy"
+     Application.ReplaceFormat.NumberFormat = "yyyy-mm-dd;@"
+    
+        'Find and replace date formatting based on above defined formatting
+        Cells.Replace What:="", Replacement:="", LookAt:=xlWhole, SearchOrder:= _
+        xlByRows, SearchFormat:=True, ReplaceFormat:=True
+    
+    'Clear formatting
+    Application.FindFormat.Clear
+    Application.ReplaceFormat.Clear
+    
+        'Finds and replaces case for TRUE boolean values
+        Cells.Replace What:="TRUE", Replacement:="'true", LookAt:=xlWhole, _
+        SearchOrder:=xlByRows, MatchCase:=True, SearchFormat:=False, _
+        ReplaceFormat:=False
+        
+        'Finds and replaces case for FALSE boolean values
+        Cells.Replace What:="FALSE", Replacement:="'false", LookAt:=xlWhole, _
+        SearchOrder:=xlByRows, MatchCase:=True, SearchFormat:=False, _
+        ReplaceFormat:=False
+        
+        'Reset match case and entire contents
+        Cells.Replace What:="", Replacement:="", LookAt:=xlPart, _
+        SearchOrder:=xlByRows, MatchCase:=False, SearchFormat:=False, _
+        ReplaceFormat:=False
+    
+    'Clear Formatting
+    Application.FindFormat.Clear
+    Application.ReplaceFormat.Clear
+    Application.ScreenUpdating = True
+
+    Columns.AutoFit
+    Range(startCell).Select
+           
+    'ActiveWorkbook.Save 'uncomment this line to activate the autosave function.
+    
+    
+
+End Sub
+Function ConvertToLetter(iCol As Integer) As String
+   Dim iAlpha As Integer
+   Dim iRemainder As Integer
+   iAlpha = Int(iCol / 27)
+   iRemainder = iCol - (iAlpha * 26)
+   If iAlpha > 0 Then
+      ConvertToLetter = Chr(iAlpha + 64)
+   End If
+   If iRemainder > 0 Then
+      ConvertToLetter = ConvertToLetter & Chr(iRemainder + 64)
+   End If
+End Function
+
+
+Function autoHeaderF()
+'
+
+' Developed by Tom Holmes tholmes@dtcc.com
+' Emotional counselor: Frank
+
+    Application.ScreenUpdating = False
+    Dim lastrecord
+    Dim commentLocation
+    Dim foundIt
+    Dim count
+    
+    foundIt = False
+    count = 0
+    
+    'checks to see if the sheet is already formatted
+    If (Range("A1").Value = "*1") And (Range("A2").Value = "*comment") Then
+        Range("A2").Value = "*Comment"
+        Exit Function
+    End If
+        
+    
+    Set mylastcell = Cells(1, 1).SpecialCells(xlLastCell)
+    Range("A1").Select
+    
+    'prevents formatting if more than one cell in row 1 is "*comment"
+    For i = 1 To mylastcell.Row
+        If (ActiveCell.Value = "*comment") Or (ActiveCell.Value = "comment") Then
+            count = count + 1
+        End If
+         ActiveCell.Offset(1, 0).Select
+    Next i
+    
+    If count >= 2 Then
+        Application.ScreenUpdating = True
+        MsgBox "More than one 'comment' found in row 1. Please verify", vbInformation, "WARNING!"
+        endIt = True
+        Range("A1").Select
+        Exit Function
+    End If
+    Range("A1").Select
+    
+    For i = 1 To mylastcell.Row
+        If ActiveCell.Value = "*comment" Then
+        commentLocation = ActiveCell.Row
+        foundIt = True
+        Exit For
+        End If
+        ActiveCell.Offset(1, 0).Select
+    Next i
+    
+    If foundIt = True Then
+        
+        If commentLocation <> 1 Then
+            commentLocation = commentLocation - 1
+            Rows("1:" & commentLocation).Select
+            Selection.Delete Shift:=xlUp
+        End If
+            
+        Range("A1").Select
+        ActiveCell.Value = "*Comment" 'ensures comment is capitalized
+        Selection.End(xlToRight).Select
+        endColumn = ActiveCell.Column
+        Rows("1:1").Select
+        Selection.Insert Shift:=xlDown, CopyOrigin:=xlFormatFromLeftOrAbove
+                
+        Range("A1").Select
+        ActiveCell.FormulaR1C1 = "*1"
+         
+        For i = 2 To endColumn
+            ActiveCell.Offset(0, 1).Select
+            ActiveCell.Value = i
+        Next i
+        
+        Range("A1").Select
+    End If
+    
+    If foundIt = False Then
+        Range("A1").Select
+        MsgBox "No '*Comment' box found in Row 1. Please verify this is the correct form you want to format", vbInformation, "WARNING!"
+        Application.ScreenUpdating = True
+        Range("A1").Select
+        endIt = True
+        Exit Function
+    End If
+         
+        
+End Function
+
+
